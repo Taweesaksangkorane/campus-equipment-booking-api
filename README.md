@@ -2,6 +2,8 @@
 
 TypeScript + Hono บน Cloudflare Workers ใช้ D1 binding ชื่อ `DB` ไม่มี frontend
 
+เปิด Base API URL ที่ลงท้าย `/api` ได้โดยตรง: GET `/api` ส่งชื่อ API และรายการ endpoints เป็น JSON (200)
+
 Deploy สำเร็จบน Cloudflare Workers และทดสอบ remote ผ่าน 31 เคสแล้ว Base API URL: `https://campus-equipment-booking-api.inventory-management-api.workers.dev/api` หลักฐาน remote อยู่ใน `evidence/HTTP_TEST_RESULTS.md` และ local ใน `evidence/LOCAL_HTTP_TEST_RESULTS.md` Import `postman/Campus-Equipment-Booking-Cloudflare.postman_collection.json` เพื่อทดสอบ URL จริง
 
 ## 1. ติดตั้งและรัน local

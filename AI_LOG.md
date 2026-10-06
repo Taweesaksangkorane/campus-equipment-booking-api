@@ -51,6 +51,8 @@ Before submission, the student should review the main routes, overlap rule, stat
 
 ## Ownership review
 
+After testing, the student requested an optional GET /api discovery route so the Base API URL returns the API name and endpoint list instead of 404. AI added the route and contract documentation; no database schema change was required.
+
 AI helped draft explanations for the ownership questions in OWNERSHIP_CHECK.md.
 
 The student is responsible for reviewing the source code and being able to explain, in their own words:

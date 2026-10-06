@@ -35,6 +35,17 @@ function validate(value: unknown, partial: boolean): Partial<Input> {
 }
 
 app.get('/', c => c.json({ name: 'Campus Equipment Booking API', api: '/api' }));
+app.get('/api', c => c.json({
+  name: 'Campus Equipment Booking API',
+  endpoints: [
+    { method: 'GET', path: '/api/equipment' },
+    { method: 'GET', path: '/api/bookings' },
+    { method: 'GET', path: '/api/bookings/:id' },
+    { method: 'POST', path: '/api/bookings' },
+    { method: 'PATCH', path: '/api/bookings/:id' },
+    { method: 'DELETE', path: '/api/bookings/:id' },
+  ],
+}));
 app.get('/api/equipment', async c => c.json((await c.env.DB.prepare('SELECT id, name, location FROM equipment ORDER BY id').all()).results));
 app.get('/api/bookings', async c => c.json((await c.env.DB.prepare('SELECT * FROM bookings ORDER BY startAt, id').all<Booking>()).results));
 app.get('/api/bookings/:id', async c => {

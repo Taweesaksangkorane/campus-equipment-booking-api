@@ -6,6 +6,7 @@ Deployed Base URL: `https://campus-equipment-booking-api.inventory-management-ap
 
 | Method | Path | Success |
 |---|---|---|
+| GET | / | 200 API name and endpoint list (optional discovery route) |
 | GET | /equipment | 200 array |
 | GET | /bookings | 200 array |
 | GET | /bookings/:id | 200 booking |
