@@ -1,6 +1,6 @@
 # Quality Gate review
 
-Reviewed against the exam brief, rubric, and the eight-area Quality Gate supplied by the student in chat. Initial source was saved in snapshots/v1 at 13:37:52 Bangkok time, before the implementation improvements. The exam start time and minute-30 checkpoint are unverified; this review does not certify the required checkpoint timing.
+Reviewed against the four instructor documents: exam_brief_en.md, rubric_en.md, quality_gate.md, and curl_test_guide.md. Initial source was saved in snapshots/v1 at 13:37:52 Bangkok time, before implementation improvements. The student supplied a Start Exam announcement screenshot showing 13:25. If this is the official start, minute 30 is 13:55 and the saved source snapshot precedes it. The brief asks for a commit or screenshot; the saved files are neither a contemporaneous commit nor a screenshot. Instructor acceptance of this alternative remains to be confirmed.
 
 | Area | What was found | How it was fixed | Evidence |
 |---|---|---|---|
@@ -27,7 +27,7 @@ Actual remote HTTP statuses and response bodies are in evidence/HTTP_TEST_RESULT
 4. Reasoning: interval/status explanations and assumptions are documented. Student explanation exercise is pending.
 5. Execution Value: README contains run/deploy/test commands; 31 remote HTTP cases passed.
 6. Accuracy: input/time validation, parameter binding and JSON errors are implemented and tested.
-7. Delivery Quality: source, API contract/schema, README, AI log, review, snapshots and HTTP evidence are present. No browser client was built, so CORS is not required. Minute-30 timing remains unverified.
+7. Delivery Quality: source, API contract/schema, README, AI log, review, snapshots and HTTP evidence are present. No browser client was built, so CORS is not required. The 13:37:52 source snapshot is before 13:55 if the announced 13:25 start applies; acceptance of its format remains to be confirmed.
 8. You Own It: significant AI assistance and student-visible Postman results are recorded truthfully. The supplied six-page PDF now demonstrates all eleven manual Postman cases, including create/read/update/delete and errors (see evidence/POSTMAN_EVIDENCE_REVIEW.md). The student must still confirm that they can explain each key rule/query and improvement.
 
 ## Submission decision

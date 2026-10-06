@@ -86,6 +86,6 @@ Remote test จะสร้างและลบข้อมูลทดสอ�
 
 400 คือข้อมูลไม่ถูกต้อง; 404 คือหา resource ไม่เจอ; 409 คือข้อมูลถูกต้องแต่ขัดกับ booking ที่มีอยู่ DELETE สำเร็จเป็น 204 และไม่มี body เวลาใช้ UTC แบบเดียวกันทุก record เพื่อเปรียบเทียบ TEXT ได้ถูกต้อง
 
-ได้รับ Quality Gate ทั้ง 8 ด้านจากผู้ใช้ในแชตแล้ว และอัปเดต `QUALITY_GATE_REVIEW.md` ตาม checklist นี้ ผู้เรียนต้องตรวจ `OWNERSHIP_CHECK.md` และบันทึกผลตรวจของตนเองใน `AI_LOG.md` ก่อนส่ง หลักฐานเวลา checkpoint นาทีที่ 30 ยังไม่ได้ยืนยัน
+ตรวจเทียบเอกสารอาจารย์ทั้ง 4 ไฟล์และ Quality Gate ทั้ง 8 ด้านแล้ว ผู้เรียนต้องทบทวน `OWNERSHIP_CHECK.md` ก่อนส่ง ภาพประกาศ Start Exam แสดง 13:25 จึงครบ 30 นาทีที่ 13:55 หากนับจากประกาศนี้ snapshot source เวลา 13:37:52 อยู่ก่อน checkpoint แต่เป็นไฟล์ที่บันทึกไว้ ไม่ใช่ commit หรือ screenshot ณ เวลานั้น ควรให้อาจารย์ยืนยันการรับหลักฐานรูปแบบนี้
 
 อ้างอิง Cloudflare: [local development](https://developers.cloudflare.com/d1/best-practices/local-development/), [D1 migrations](https://developers.cloudflare.com/d1/reference/migrations/), [Wrangler configuration](https://developers.cloudflare.com/workers/wrangler/configuration/)
