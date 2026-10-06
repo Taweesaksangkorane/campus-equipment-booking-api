@@ -1,14 +1,16 @@
-# Campus Equipment Booking API
+﻿# Campus Equipment Booking API
 
-TypeScript + Hono บน Cloudflare Workers ใช้ D1 binding ชื่อ `DB` ไม่มี frontend
+A TypeScript/Hono API deployed on Cloudflare Workers with a D1 database bound as `DB`. This project has no frontend.
 
-เปิด Base API URL ที่ลงท้าย `/api` ได้โดยตรง: GET `/api` ส่งชื่อ API และรายการ endpoints เป็น JSON (200)
+GET `/api` returns the API name and available endpoints as JSON with status 200.
 
-Deploy สำเร็จบน Cloudflare Workers และทดสอบ remote ผ่าน 31 เคสแล้ว Base API URL: `https://campus-equipment-booking-api.inventory-management-api.workers.dev/api` หลักฐาน remote อยู่ใน `evidence/HTTP_TEST_RESULTS.md` และ local ใน `evidence/LOCAL_HTTP_TEST_RESULTS.md` Import `postman/Campus-Equipment-Booking-Cloudflare.postman_collection.json` เพื่อทดสอบ URL จริง
+Base API URL: `https://campus-equipment-booking-api.inventory-management-api.workers.dev/api`
 
-## 1. ติดตั้งและรัน local
+Deployment succeeded and all 31 automated HTTP cases passed against remote D1. Remote evidence is in `evidence/HTTP_TEST_RESULTS.md`; local evidence is in `evidence/LOCAL_HTTP_TEST_RESULTS.md`. Import `postman/Campus-Equipment-Booking-Cloudflare.postman_collection.json` to test the deployed API.
 
-ต้องมี Node.js 22 ขึ้นไป (ทดสอบด้วย Node 24) บน PowerShell ใช้ `.cmd` เพื่อหลีกเลี่ยงปัญหา execution policy
+## 1. Install and run locally
+
+Use Node.js 22 or later (tested with Node.js 24). On Windows PowerShell, use `.cmd` commands to avoid script execution policy issues.
 
 ```powershell
 npm.cmd ci
@@ -17,16 +19,16 @@ npm.cmd run db:migrate
 npm.cmd run dev
 ```
 
-เปิดอีก terminal:
+Keep the server running and open another terminal:
 
 ```powershell
 curl.exe -i http://localhost:8787/api/equipment
 npm.cmd test
 ```
 
-`npm test` ส่ง HTTP จริงไปที่ local server บันทึก request/status/response ใน `evidence/HTTP_TEST_RESULTS.md` และลบเฉพาะ booking ที่ทดสอบสร้างขึ้น ต้องเปิด server ไว้ก่อน ฐานข้อมูล local เก็บใน `.wrangler/state` และแยกจาก remote D1
+`npm test` sends real HTTP requests to the local server, writes request/status/response evidence to `evidence/HTTP_TEST_RESULTS.md`, and deletes only bookings created by the test script. Running it again overwrites that evidence file; preserve existing results first if needed. Local D1 data is stored in `.wrangler/state` and is separate from remote D1.
 
-## 2. ทดสอบด้วย curl บน PowerShell
+## 2. Test with curl in PowerShell
 
 ```powershell
 $bookingJson = '{"equipmentId":"eq-1","borrowerName":"Somchai Jaidee","startAt":"2026-10-20T09:00:00.000Z","endAt":"2026-10-20T11:00:00.000Z","purpose":"Class presentation"}'
@@ -35,57 +37,60 @@ curl.exe -i -X POST http://localhost:8787/api/bookings -H "Content-Type: applica
 curl.exe -i http://localhost:8787/api/bookings
 ```
 
-ส่ง POST เดิมซ้ำจะได้ 409 จากนั้นใช้ `id` ใน response สำหรับ GET/PATCH/DELETE:
+Creating the same booking again returns 409. Use the `id` from a successful 201 response for GET/PATCH/DELETE:
 
 ```powershell
-$bookingId = 'ใส่-id-จาก-response'
+$bookingId = 'replace-with-id-from-response'
 curl.exe -i "http://localhost:8787/api/bookings/$bookingId"
 [System.IO.File]::WriteAllText((Join-Path (Get-Location) 'patch.json'), '{"purpose":"Updated presentation"}')
 curl.exe -i -X PATCH "http://localhost:8787/api/bookings/$bookingId" -H "Content-Type: application/json" --data-binary "@patch.json"
 curl.exe -i -X DELETE "http://localhost:8787/api/bookings/$bookingId"
 ```
 
-## 3. Deploy ไป Cloudflare Workers + D1
+Choose an unbooked interval for the initial POST. If the interval is already booked, the API correctly returns 409.
 
-สถานะปัจจุบัน: สร้าง D1 remote แล้ว ตั้งค่า binding `DB` และ database_id จริงแล้ว apply migration และ deploy สำเร็จ พร้อมทดสอบ URL จริงผ่าน 31 เคส คำสั่ง login/create ด้านล่างเป็นขั้นตอนสำหรับตั้งค่าครั้งแรก ไม่ต้องสร้างฐานข้อมูลซ้ำ:
+## 3. Deploy to Cloudflare Workers and D1
+
+The current remote database, binding, migrations, and deployment are already configured. The login/create commands below describe first-time setup; do not recreate the existing database.
 
 ```powershell
 npx.cmd wrangler login
 npx.cmd wrangler d1 create campus-equipment-booking
 ```
 
-สำหรับการตั้งค่าใหม่ ให้ใส่ `database_id` จากผลลัพธ์ใน `wrangler.jsonc` คง binding `DB` และ database_name ให้ตรงกับที่สร้าง โปรเจกต์ปัจจุบันตั้งค่าแล้ว
+For a new deployment, copy the returned `database_id` into `wrangler.jsonc`, keep the binding name `DB`, and match `database_name` to the created database. This repository already contains the configured database ID.
 
 ```powershell
 npx.cmd wrangler d1 migrations apply DB --remote
 npm.cmd run deploy
 ```
 
-ใช้ URL ที่ Wrangler แสดงหลัง deploy:
+Test the deployed API:
 
 ```powershell
-curl.exe -i https://YOUR-WORKER.YOUR-SUBDOMAIN.workers.dev/api/equipment
-$env:BASE_URL = 'https://YOUR-WORKER.YOUR-SUBDOMAIN.workers.dev/api'
+curl.exe -i https://campus-equipment-booking-api.inventory-management-api.workers.dev/api/equipment
+$env:BASE_URL = 'https://campus-equipment-booking-api.inventory-management-api.workers.dev/api'
 npm.cmd test
 Remove-Item Env:BASE_URL
 ```
 
-Remote test จะสร้างและลบข้อมูลทดสอบใน D1 จริง URL ตัวอย่างด้านบนเป็น placeholder API ของ lab ไม่มี authentication; เมื่อ deploy URL สามารถเรียกอ่านและแก้ไข booking ได้ จึงควรใช้ข้อมูลสมมติสำหรับการสอบ
+Remote tests create and delete test bookings in the real D1 database. The deployed lab API is public and has no authentication, so use simulated data.
 
-## 4. เอกสารและจุดที่ต้องอธิบายได้
+## 4. Submission files and implementation explanations
 
-- `API_CONTRACT.md`: endpoints, payloads, statuses, assumptions และ schema
-- `migrations/0001_initial.sql`: equipment สองรายการ, FK, index และ overlap triggers
-- `src/index.ts`: validation, CRUD และ parameter binding
-- `evidence/HTTP_TEST_RESULTS.md`: ผล HTTP ที่รันจริง
-- `evidence/testapipostman.pdf`: หลักฐาน Postman ที่ผู้ใช้ส่งมา ครบ 11 เคสใน 6 หน้า พร้อมสรุปใน `evidence/POSTMAN_EVIDENCE_REVIEW.md`
-- `snapshots/v1/`: โค้ดก่อนปรับปรุงจาก review
-- `QUALITY_GATE_REVIEW.md`, `AI_LOG.md`: review และบันทึก AI ตามจริง
+- `API_CONTRACT.md`: endpoints, payloads, status codes, assumptions, and schema.
+- `migrations/0001_initial.sql`: two equipment records, foreign key, index, and overlap triggers.
+- `src/index.ts`: validation, CRUD, and parameter binding.
+- `evidence/HTTP_TEST_RESULTS.md`: automated remote HTTP results.
+- `evidence/LOCAL_HTTP_TEST_RESULTS.md`: preserved automated local HTTP results.
+- `evidence/testapipostman.pdf`: student-supplied Postman evidence, 11 cases across six pages, summarized in `evidence/POSTMAN_EVIDENCE_REVIEW.md`.
+- `snapshots/v1/`: the initial source before review improvements.
+- `QUALITY_GATE_REVIEW.md` and `AI_LOG.md`: review findings and the record of AI assistance and verification.
 
-สูตรเวลาทับซ้อนคือ `existing.startAt < new.endAt AND existing.endAt > new.startAt` ใช้ `<`/`>` เพราะเวลาสิ้นสุดตรงกับเวลาเริ่มของอีก booking ถือว่าไม่ทับกัน Trigger ตรวจในฐานข้อมูลขณะเขียน จึงป้องกันคำขอพร้อมกันได้ PATCH trigger ตัด id ตัวเองออก ส่วน SQL ทุกค่าจาก request ใช้ `?` และ `.bind()`
+The overlap rule is `existing.startAt < new.endAt AND existing.endAt > new.startAt`. Strict comparisons permit adjacent bookings where one ends exactly when another starts. Database triggers check overlaps at write time, including concurrent requests. The update trigger excludes the booking's own ID. Every request-derived SQL value uses a `?` placeholder and `.bind()`.
 
-400 คือข้อมูลไม่ถูกต้อง; 404 คือหา resource ไม่เจอ; 409 คือข้อมูลถูกต้องแต่ขัดกับ booking ที่มีอยู่ DELETE สำเร็จเป็น 204 และไม่มี body เวลาใช้ UTC แบบเดียวกันทุก record เพื่อเปรียบเทียบ TEXT ได้ถูกต้อง
+Status 400 means invalid request data, including a nonexistent equipment reference. Status 404 means the requested booking or route was not found. Status 409 means a valid booking conflicts with an existing booking. Successful DELETE returns 204 with no response body. All timestamps use the same canonical UTC format so TEXT comparisons preserve chronological order.
 
-ตรวจเทียบเอกสารอาจารย์ทั้ง 4 ไฟล์และ Quality Gate ทั้ง 8 ด้านแล้ว ผู้เรียนต้องทบทวน `OWNERSHIP_CHECK.md` ก่อนส่ง ภาพประกาศ Start Exam แสดง 13:25 จึงครบ 30 นาทีที่ 13:55 หากนับจากประกาศนี้ snapshot source เวลา 13:37:52 อยู่ก่อน checkpoint แต่เป็นไฟล์ที่บันทึกไว้ ไม่ใช่ commit หรือ screenshot ณ เวลานั้น ควรให้อาจารย์ยืนยันการรับหลักฐานรูปแบบนี้
+The work was reviewed against all four instructor documents and all eight Quality Gate areas. The student should review `OWNERSHIP_CHECK.md` before submission. The supplied Start Exam announcement shows 13:25, making the 30-minute checkpoint 13:55 if that announcement is the official start. The source snapshot saved at 13:37:52 precedes that checkpoint, but it is a saved file snapshot rather than a contemporaneous commit or screenshot. Instructor acceptance of that evidence format remains to be confirmed.
 
-อ้างอิง Cloudflare: [local development](https://developers.cloudflare.com/d1/best-practices/local-development/), [D1 migrations](https://developers.cloudflare.com/d1/reference/migrations/), [Wrangler configuration](https://developers.cloudflare.com/workers/wrangler/configuration/)
+Cloudflare references: [local development](https://developers.cloudflare.com/d1/best-practices/local-development/), [D1 migrations](https://developers.cloudflare.com/d1/reference/migrations/), [Wrangler configuration](https://developers.cloudflare.com/workers/wrangler/configuration/).
